@@ -18,10 +18,10 @@ def log_warn(msg, indent=0):
 class Args:
     def __init__(self):
         parser = argparse.ArgumentParser(
-            prog="fingermonkey", description="A tool to detect versions of open source apps based on the world-readable assets such as images, js, css or static html")
+            prog="python fingermonkey.py", description="A tool to detect versions of open source apps based on the world-readable assets such as images, js, css or static html")
         parser.add_argument('REPOSITORY', help='Path to the git repository')
         parser.add_argument(
-            'FILE', nargs='+', help='Path(s) to the file(s) to use for fingerprinting. If a directory is passed, the tool will find all files under this directory and its subdirectories recursively')
+            'FILE', nargs='+', help='Path(s) to the file(s) to use for fingerprinting. If a directory is passed, the tool will find all files under this directory and its subdirectories recursively.')
         parser.add_argument('-v', '--verbose', action='store_true')
         self.__args = parser.parse_args()
 

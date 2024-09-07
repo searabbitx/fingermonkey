@@ -25,10 +25,19 @@ git ls-tree -r <tag>
 
 ## Usage
 
-```bash
-python fingermonkey.py REPOSITORY FILES/DIRECTORIES...
 ```
-If you use a directory then fingermonkey will find all of the files in this directory recursively.
+usage: python fingermonkey.py [-h] [-v] REPOSITORY FILE [FILE ...]
+
+positional arguments:
+  REPOSITORY     Path to the git repository
+  FILE           Path(s) to the file(s) to use for fingerprinting.
+                 If a directory is passed, the tool will find all
+                 files under this directory and its subdirectories recursively.
+
+optional arguments:
+  -h, --help     show this help message and exit
+  -v, --verbose
+```
 
 ### Example 1. Downloading as much stuff as possible :)
 

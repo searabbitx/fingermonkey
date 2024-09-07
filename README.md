@@ -4,27 +4,6 @@ A tool that detects versions of open source apps based on the world-readable ass
 
 I tested this tool against couple of popular webapps. To see how it performs in practice take a look [here](TESTS.md).
 
-## How does it work
-
-To use the tool, you need to download some files from your target (preferably a lot of them :], `wget -r` is your friend) and clone the git repository of the app. When you pass those assets and the repository to fingermonkey it will:
-
-1. Iterate through all the supplied files and calculate their git hashes:
-
-```bash
-git hash-object <your-file>
-```
-
-2. Check if those files exist in any revision of the supplied repository. The files that don't have corresponding _blob objects_ in the repository are ignored.
-
-3. Iterate through all the tags in the repository and gather those that have at least one of the blob objects from step 2. in their tree.
-
-```bash
-# for each tag:
-git ls-tree -r <tag>
-```
-
-4. Finally, fingermonkey will display 10 tags with the highest number of matching blobs.
-
 ## Usage
 
 The tool doesn't use any external packages. You only need `git` installed and in your `PATH`.
@@ -88,3 +67,25 @@ To find possible versions of `SomeOpenSourceApp` based on versions of gathered f
 ```bash
 python fingermonkey.py ~/repos/SomeOpenSourceApp /tmp/app.js /tmp/main.css
 ```
+
+## How does it work
+
+To use the tool, you need to download some files from your target (preferably a lot of them :], `wget -r` is your friend) and clone the git repository of the app. When you pass those assets and the repository to fingermonkey it will:
+
+1. Iterate through all the supplied files and calculate their git hashes:
+
+```bash
+git hash-object <your-file>
+```
+
+2. Check if those files exist in any revision of the supplied repository. The files that don't have corresponding _blob objects_ in the repository are ignored.
+
+3. Iterate through all the tags in the repository and gather those that have at least one of the blob objects from step 2. in their tree.
+
+```bash
+# for each tag:
+git ls-tree -r <tag>
+```
+
+4. Finally, fingermonkey will display 10 tags with the highest number of matching blobs.
+

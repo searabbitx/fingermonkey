@@ -51,7 +51,7 @@ class Repository:
     def checkout(self, revision):
         # git log --oneline --follow -- <file_path>
         code = subprocess.Popen(
-            ['git', 'checkout', revision], cwd=self.__path, stderr=subprocess.DEVNULL).wait()
+            ['git', 'checkout', revision], cwd=self.__path, stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL).wait()
         if code != 0:
             log_info('Stashing!')
             subprocess.Popen(['git', 'stash'], cwd=self.__path).wait()
@@ -63,14 +63,26 @@ class Repository:
         self.checkout('master')
 
 
+class Progress:
+    def __init__(self, total):
+        self.__total = total
+        self.__current = 0
+
+    def advance(self):
+        self.__current += 1
+        print('... [{}/{}] ...'.format(self.__current, self.__total), end='\r')
+
+
 def find_tags(repository, repo_file, test_file):
     found_tags = []
-    for tag in repository.get_all_tags():
-        log_info('Checking {}'.format(tag), indent=1)
+    all_tags = repository.get_all_tags()
+    progress = Progress(len(all_tags))
+
+    for tag in all_tags:
+        progress.advance()
         repository.checkout(tag)
-        log_info('Current hash: {}'.format(repo_file.hash()), indent=1)
         if test_file.hash() == repo_file.hash():
-            log_info('Found!', indent=2)
+            log_info('Found! {}'.format(tag), indent=1)
             found_tags.append(tag)
     return found_tags
 

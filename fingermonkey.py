@@ -151,9 +151,21 @@ def print_results(results, longest_filename):
                 '    {} -> {}'.format(mapping.test_file.ljust(longest_filename + 1), mapping.repo_file))
 
 
+def find_files_recursively(paths):
+    result = []
+    for path in paths:
+        if os.path.isfile(path):
+            result.append(File(path))
+        else:
+            for dir, _, files in os.walk(path):
+                for file in files:
+                    result.append(File(os.path.join(dir, file)))
+    return result
+
+
 if __name__ == '__main__':
     args = Args(sys.argv)
-    files = [File(path) for path in args.files()]
+    files = find_files_recursively(args.files())
     repository = Repository(args.repo())
 
     print_banner(args, files)

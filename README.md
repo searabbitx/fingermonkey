@@ -4,6 +4,13 @@ A tool to detect versions of open source apps based on the world-readable files 
 
 ## Usage
 
+```bash
+python fingermonkey.py REPOSITORY FILES/DIRECTORIES...
+```
+If you use a directory then fingermonkey will find all of the files in this directory recursively.
+
+### Example
+
 #### Preparation
 Say that `SomeOpenSourceApp` is running on http://superopensourceapp.example.com and there's:
 - an unminified javascript file at http://superopensourceapp.example.com/js/app.js

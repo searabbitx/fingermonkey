@@ -63,7 +63,7 @@ git clone https://imaginary.git.hosting.example.com/superopensourceapp ~/repos/S
 #### Running the tool
 To find possible versions of `SomeOpenSourceApp` based on versions of gathered files, run:
 ```bash
-python fingermonkey.py ~/repos/SomeOpenSourceApp /tmp/some_page /tmp/other_page/ /tmp/404_page/
+python fingermonkey.py ~/repos/SomeOpenSourceApp /tmp/some_page /tmp/other_page /tmp/404_page
 ```
 
 ### Example 2. Testing specific files

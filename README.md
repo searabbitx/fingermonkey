@@ -1,18 +1,18 @@
 # fingermonkey
 
-A tool to detect versions of open source apps based on the world-readable files such as unminified javascript, css, static html or images.
+A tool to detect versions of open source apps based on world-readable assets such as unminified javascript, css, static html or images.
 
 ## How does it work
 
 To use the tool, you need to download some files from your target (preferably a lot of them :), `wget -r` is your friend) and the git repository of the app. Fingermonkey then:
 
-1. Iterates through all supplied files calculates their git hashes:
+1. Iterates through all the supplied files and calculates their git hashes:
 
 ```bash
 git hash-object <your-file>
 ```
 
-2. Checks if those files exist in any revision of the supplied repository. The files that don't have corresponding `blob` objects in the repository are ignored.
+2. Checks if those files exist in any revision of the supplied repository. The files that don't have corresponding _blob objects_ in the repository are ignored.
 
 3. Iterates through all the tags in the repository and gathers those that have at least one of the blob objects from step 2. in their tree.
 
@@ -21,7 +21,7 @@ git hash-object <your-file>
 git ls-tree -r <tag>
 ```
 
-4. Finally, fingermonkey will show display 10 tags with the highest number of matching blobs
+4. Finally, fingermonkey will display 10 tags with the highest number of matching blobs
 
 ## Usage
 
@@ -55,7 +55,7 @@ To find possible versions of `SomeOpenSourceApp` based on versions of gathered f
 python fingermonkey.py ~/repos/SomeOpenSourceApp /tmp/some_page /tmp/other_page/ /tmp/404_page/
 ```
 
-### Example 1. Testing specific files
+### Example 2. Testing specific files
 
 #### Preparation
 Rarely some apps won't minify their javascript/css files, so you can use them for fingerprinting.

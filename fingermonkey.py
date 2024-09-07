@@ -1,6 +1,6 @@
-import sys
-import subprocess
+import argparse
 import os
+import subprocess
 
 
 def log_info(msg, indent=0, before=0):
@@ -16,17 +16,26 @@ def log_warn(msg, indent=0):
 
 
 class Args:
-    def __init__(self, argv):
-        self.__argv = argv
+    def __init__(self):
+        parser = argparse.ArgumentParser(
+            prog="fingermonkey", description="A tool to detect versions of open source apps based on the world-readable assets such as images, js, css or static html")
+        parser.add_argument('REPOSITORY', help='Path to the git repository')
+        parser.add_argument(
+            'FILE', nargs='+', help='Path(s) to the file(s) to use for fingerprinting. If a directory is passed, the tool will find all files under this directory and its subdirectories recursively')
+        parser.add_argument('-v', '--verbose', action='store_true')
+        self.__args = parser.parse_args()
 
     def repo(self):
-        return self.__argv[1]
+        return self.__args.REPOSITORY
 
     def files(self):
-        return self.__argv[2:]
+        return self.__args.FILE
 
     def longest_filename(self):
         return max([len(n) for n in self.files()])
+
+    def verbose(self):
+        return self.__args.verbose
 
 
 class File:
@@ -181,12 +190,12 @@ def filter_files_with_existing_objects(repository, files):
 
 
 if __name__ == '__main__':
-    args = Args(sys.argv)
+    args = Args()
     all_files = find_files_recursively(args.files())
     repository = Repository(args.repo())
     files = filter_files_with_existing_objects(repository, all_files)
 
-    print_banner(args, files)
+    print_banner(args, files, args.verbose())
 
     if not len(files):
         log_warn(
@@ -196,4 +205,4 @@ if __name__ == '__main__':
     log_section('Looking for matching tags')
 
     results = find_tags(repository, files)
-    print_results(results, args.longest_filename())
+    print_results(results, args.longest_filename(), args.verbose())

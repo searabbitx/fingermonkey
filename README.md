@@ -6,7 +6,7 @@ I tested this tool against couple of popular webapps. To see how it performs in 
 
 ## How does it work
 
-To use the tool, you need to download some files from your target (preferably a lot of them :), `wget -r` is your friend) and the git repository of the app. Fingermonkey then:
+To use the tool, you need to download some files from your target (preferably a lot of them :], `wget -r` is your friend) and the git repository of the app. Fingermonkey then:
 
 1. Iterates through all the supplied files and calculates their git hashes:
 
@@ -23,7 +23,7 @@ git hash-object <your-file>
 git ls-tree -r <tag>
 ```
 
-4. Finally, fingermonkey will display 10 tags with the highest number of matching blobs
+4. Finally, fingermonkey will display 10 tags with the highest number of matching blobs.
 
 ## Usage
 

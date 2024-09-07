@@ -6,17 +6,17 @@ I tested this tool against couple of popular webapps. To see how it performs in 
 
 ## How does it work
 
-To use the tool, you need to download some files from your target (preferably a lot of them :], `wget -r` is your friend) and the git repository of the app. Fingermonkey then:
+To use the tool, you need to download some files from your target (preferably a lot of them :], `wget -r` is your friend) and the git repository of the app. When you pass those assets and the repository to fingermonkey it will:
 
-1. Iterates through all the supplied files and calculates their git hashes:
+1. Iterate through all the supplied files and calculate their git hashes:
 
 ```bash
 git hash-object <your-file>
 ```
 
-2. Checks if those files exist in any revision of the supplied repository. The files that don't have corresponding _blob objects_ in the repository are ignored.
+2. Check if those files exist in any revision of the supplied repository. The files that don't have corresponding _blob objects_ in the repository are ignored.
 
-3. Iterates through all the tags in the repository and gathers those that have at least one of the blob objects from step 2. in their tree.
+3. Iterate through all the tags in the repository and gather those that have at least one of the blob objects from step 2. in their tree.
 
 ```bash
 # for each tag:

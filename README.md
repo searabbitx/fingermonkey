@@ -5,23 +5,26 @@ A tool to detect versions of open source apps based on the world-readable files 
 ## Usage
 
 #### Preparation
-Say that SomeOpenSourceApp is running on http://superopensourceapp.example.com and there's an unminified javascript file at http://superopensourceapp.example.com/js/app.js.
+Say that `SomeOpenSourceApp` is running on http://superopensourceapp.example.com and there's:
+- an unminified javascript file at http://superopensourceapp.example.com/js/app.js
+- an unminified css file at http://superopensourceapp.example.com/styles/main.css
 
-First, download the javascript file to some location:
+First, download those files to some location
 ```bash
 wget http://superopensourceapp.example.com/js/app.js -O /tmp/app.js
+wget http://superopensourceapp.example.com/styles/main.css -O /tmp/main.css
 ```
 
-Then clone the SomeOpenSourceApp's repo to some location (say `~/repos/SomeOpenSourceApp`)
+Then clone the `SomeOpenSourceApp`'s repo to some location (say `~/repos/SomeOpenSourceApp`)
 
 ```bash
 git clone https://imaginary.git.hosting.example.com/superopensourceapp ~/repos/SomeOpenSourceApp
 ```
 
 #### Running the tool
-Finally, to find possible versions of SomeOpenSourceApp, run:
+Finally, to find possible versions of `SomeOpenSourceApp` based on versions of gathered files, run:
 ```bash
-python fingermonkey.py ~/repos/SomeOpenSourceApp /tmp/app.js
+python fingermonkey.py ~/repos/SomeOpenSourceApp /tmp/app.js /tmp/main.css
 ```
 
 ## How does it work

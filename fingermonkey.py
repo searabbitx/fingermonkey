@@ -1,6 +1,7 @@
 import argparse
 import os
 import subprocess
+import sys
 
 
 def log_info(msg, indent=0, before=0):
@@ -103,10 +104,16 @@ class Progress:
     def __init__(self, total):
         self.__total = total
         self.__current = 0
+        self.__last_len = 0
 
-    def advance(self):
+    def advance(self, additional_msg=None):
         self.__current += 1
-        print('... [{}/{}] ...'.format(self.__current, self.__total), end='\r')
+        suffix = ' | {}'.format(additional_msg) if additional_msg else ''
+        msg = '\r... [{}/{}] ...{}'.format(self.__current,
+                                           self.__total, suffix).ljust(self.__last_len)
+        print(msg, end='\n\n')
+        sys.stdout.write("\033[F\033[F")
+        self.__last_len = len(msg)
 
     def finish(self):
         print('\n', end='\r')
@@ -126,10 +133,16 @@ def find_tags(repository: Repository, files):
     all_tags = repository.get_all_tags()
     progress = Progress(len(all_tags))
 
+    most_mappings = 0
+    current_winner_msg = None
     for tag in all_tags:
-        progress.advance()
+        progress.advance(current_winner_msg)
         mappings = find_mappings(tag, files)
         if len(mappings) > 0:
+            if len(mappings) > most_mappings:
+                most_mappings = len(mappings)
+                current_winner_msg = 'Current winner: {} ({} files matched)'.format(
+                    tag, len(mappings))
             found_tags.append(Result(tag, mappings))
 
     progress.finish()

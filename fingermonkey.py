@@ -63,29 +63,7 @@ class Repository:
         self.checkout('master')
 
 
-if __name__ == '__main__':
-    args = Args(sys.argv)
-    print('''
-          Repository:            {}
-          Path to file in repo:  {}
-          File to test:          {} 
-
-
-          Please make sure that the repository is at the current revision!
-          '''.format(args.repo(), args.repo_file(), args.file()))
-
-    test_file = File(args.file())
-    repo_file = File(args.repo() + '/' + args.repo_file())
-    repository = Repository(args.repo())
-
-    print('''
-          File to test hash:     {} 
-          Repo file hash:        {}
-        '''.format(test_file.hash(), repo_file.hash()))
-
-    log_info('Looking for all tags with {} in specified version ({})'.format(
-        args.repo_file(), test_file.hash()))
-
+def find_tags(repository, repo_file, test_file):
     found_tags = []
     for tag in repository.get_all_tags():
         log_info('Checking {}'.format(tag), indent=1)
@@ -94,6 +72,27 @@ if __name__ == '__main__':
         if test_file.hash() == repo_file.hash():
             log_info('Found!', indent=2)
             found_tags.append(tag)
+    return found_tags
+
+
+if __name__ == '__main__':
+    args = Args(sys.argv)
+    test_file = File(args.file())
+    repo_file = File(args.repo() + '/' + args.repo_file())
+    repository = Repository(args.repo())
+
+    print('''
+          Repository:            {}
+          Path to file in repo:  {} ({})
+          File to test:          {} ({})
+
+          Please make sure that the repository is at the current revision!
+          '''.format(args.repo(), args.repo_file(), repo_file.hash(), args.file(), test_file.hash()))
+
+    log_info('Looking for all tags with {} in specified version ({})'.format(
+        args.repo_file(), test_file.hash()))
+
+    found_tags = find_tags(repository, repo_file, test_file)
 
     log_info('Done! found tags:')
     for tag in found_tags:

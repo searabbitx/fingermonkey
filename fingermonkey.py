@@ -48,7 +48,8 @@ class File:
 
 class TreeEntry:
     def __init__(self, output):
-        [_, self.type, self.hash, self.name] = output.split()
+        [_, self.type, self.hash, *name] = output.split()
+        self.name = ' '.join(name)
 
 
 class Mapping:

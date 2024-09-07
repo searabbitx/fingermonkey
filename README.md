@@ -43,10 +43,10 @@ python fingermonkey.py ~/repos/SomeOpenSourceApp /tmp/app.js /tmp/main.css
 Download all assets from couple of pages recursively:
 
 ```bash
-wget -r https://superopensourceapp.example.com/some_page -P /tmp/some_page/
-wget -r https://superopensourceapp.example.com/other_page -P /tmp/other_page/
+wget -r -erobots=off https://superopensourceapp.example.com/some_page -P /tmp/some_page/
+wget -r -erobots=off https://superopensourceapp.example.com/other_page -P /tmp/other_page/
 # sometimes 404 pages are static, so try
-wget -r https://superopensourceapp.example.com/idontexist123123 -P /tmp/404_page/
+wget -r -erobots=off https://superopensourceapp.example.com/idontexist123123 -P /tmp/404_page/
 ```
 
 Then run:

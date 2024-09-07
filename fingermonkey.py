@@ -1,9 +1,14 @@
 import sys
 import subprocess
+import os
 
 
 def log_info(msg, indent=0):
     print('{}[+] {}'.format(indent * '  ', msg))
+
+
+def log_warn(msg, indent=0):
+    print('{}[!] Warning: {}'.format(indent * '  ', msg))
 
 
 class Args:
@@ -25,6 +30,8 @@ class File:
         self.__path = path
 
     def hash(self):
+        if not os.path.exists(self.__path):
+            return None
         # todo: use python here to create a checksum
         out = subprocess.check_output(['md5sum', self.__path])
         return out.decode('utf-8').split()[0]

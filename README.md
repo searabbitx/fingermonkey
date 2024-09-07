@@ -38,6 +38,3 @@ Then it iterates through all the tags in the repository and outputs those that h
 # for each tag:
 git ls-tree -r <tag>
 ```
-
-## Todos
-- [ ] Support multiple files

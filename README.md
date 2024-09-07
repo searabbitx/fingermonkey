@@ -2,6 +2,8 @@
 
 A tool that detects versions of open source apps based on the world-readable assets such as images, js, css or static html.
 
+I tested this tool against couple of popular webapps. To see how it performs in practice take a look [here](TESTS.md).
+
 ## How does it work
 
 To use the tool, you need to download some files from your target (preferably a lot of them :), `wget -r` is your friend) and the git repository of the app. Fingermonkey then:

@@ -81,6 +81,12 @@ class Repository:
             ['git', 'ls-tree', '-r', revision], cwd=self.__path).decode('utf-8')
         return [TreeEntry(l) for l in out.split('\n') if l]
 
+    def object_exists(self, obj):
+        # git cat-file -t <obj>
+        exit_code = subprocess.Popen(
+            ['git', 'cat-file', '-t', obj], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,  cwd=self.__path).wait()
+        return exit_code == 0
+
 
 class Progress:
     def __init__(self, total):
@@ -134,7 +140,7 @@ def print_banner(args: Args, files):
                           |___|'''[1:])
     pad = 4 * ' '
     print(pad + 'Repository:     {}'.format(args.repo()))
-    print(pad + 'Files to test:')
+    print(pad + 'Files that exist in some revision:')
     for file in files:
         print(
             pad + '  - {} (git hash: {})'.format(file.path.ljust(args.longest_filename()), file.hash()))
@@ -163,12 +169,22 @@ def find_files_recursively(paths):
     return result
 
 
+def filter_files_with_existing_objects(repository, files):
+    return [f for f in files if repository.object_exists(f.hash())]
+
+
 if __name__ == '__main__':
     args = Args(sys.argv)
-    files = find_files_recursively(args.files())
+    all_files = find_files_recursively(args.files())
     repository = Repository(args.repo())
+    files = filter_files_with_existing_objects(repository, all_files)
 
     print_banner(args, files)
+
+    if not len(files):
+        log_warn(
+            "None of the supplied files exist in any revision of the repository provided")
+        exit(1)
 
     log_section('Looking for matching tags')
 

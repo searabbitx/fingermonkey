@@ -9,7 +9,9 @@ python fingermonkey.py REPOSITORY FILES/DIRECTORIES...
 ```
 If you use a directory then fingermonkey will find all of the files in this directory recursively.
 
-### Example
+**NOTE**: The tool first checks if a file exists in any revision of the supplied
+
+### Example 1. Testing specific files
 
 #### Preparation
 Say that `SomeOpenSourceApp` is running on http://superopensourceapp.example.com and there's:
@@ -33,6 +35,27 @@ Finally, to find possible versions of `SomeOpenSourceApp` based on versions of g
 ```bash
 python fingermonkey.py ~/repos/SomeOpenSourceApp /tmp/app.js /tmp/main.css
 ```
+
+### Example 2. Downloading as much stuff as possible :)
+
+### Preparation
+
+Download all assets from couple of pages recursively:
+
+```bash
+wget -r https://superopensourceapp.example.com/some_page -P /tmp/some_page/
+wget -r https://superopensourceapp.example.com/other_page -P /tmp/other_page/
+# sometimes 404 pages are static, so try
+wget -r https://superopensourceapp.example.com/idontexist123123 -P /tmp/404_page/
+```
+
+Then run:
+
+```bash
+python fingermonkey.py ~/repos/SomeOpenSourceApp /tmp/some_page /tmp/other_page/ /tmp/404_page/
+```
+
+fingermonkey will pick up all files in specified directories recursively and ignore those, that don't exist in any revision of the repository.
 
 ## How does it work
 

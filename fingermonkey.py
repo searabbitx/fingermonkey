@@ -3,8 +3,8 @@ import subprocess
 import os
 
 
-def log_info(msg, indent=0):
-    print('{}[+] {}'.format(indent * '  ', msg))
+def log_info(msg, indent=0, before=0):
+    print('{}{}[+] {}'.format(before * '\n', indent * '  ', msg))
 
 
 def log_warn(msg, indent=0):
@@ -18,34 +18,41 @@ class Args:
     def repo(self):
         return self.__argv[1]
 
-    def repo_file(self):
-        return self.__argv[2]
-
     def file(self):
-        return self.__argv[3]
+        return self.__argv[2]
 
 
 class File:
     def __init__(self, path):
         self.__path = path
+        self.__hash = None
 
     def hash(self):
+        if self.__hash:
+            return self.__hash
+
         if not os.path.exists(self.__path):
             return None
-        # todo: use python here to create a checksum
-        out = subprocess.check_output(['md5sum', self.__path])
-        return out.decode('utf-8').split()[0]
+        # git hash-object <file>
+        out = subprocess.check_output(['git', 'hash-object', self.__path])
+        self.__hash = out.decode('utf-8').strip()
+        return self.__hash
+
+
+class TreeEntry:
+    def __init__(self, output):
+        [_, self.type, self.hash, self.name] = output.split()
+
+
+class Result:
+    def __init__(self, tag, filepath):
+        self.tag = tag
+        self.filepath = filepath
 
 
 class Repository:
     def __init__(self, path):
         self.__path = path
-
-    def get_all_commits_for(self, file_path):
-        # git log --oneline --follow -- <file_path>
-        out = subprocess.check_output(
-            ['git', 'log', '--oneline', '--follow', '--', file_path], cwd=self.__path).decode('utf-8')
-        return [ln.split(' ')[0] for ln in out.split('\n') if ln]
 
     def get_all_tags(self):
         # git tag --sort=taggerdate
@@ -55,19 +62,11 @@ class Repository:
         result.reverse()
         return result
 
-    def checkout(self, revision):
-        # git log --oneline --follow -- <file_path>
-        code = subprocess.Popen(
-            ['git', 'checkout', revision], cwd=self.__path, stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL).wait()
-        if code != 0:
-            log_info('Stashing!')
-            subprocess.Popen(['git', 'stash'], cwd=self.__path).wait()
-            subprocess.Popen(['git', 'stash', 'clear'], cwd=self.__path).wait()
-            self.checkout(revision)
-
-    def checkout_initial_revision(self):
-        # todo: find an initial revision for a cleanup
-        self.checkout('master')
+    def get_tree_for_revision(self, revision):
+        # git ls-tree -r <revision>
+        out = subprocess.check_output(
+            ['git', 'ls-tree', '-r', revision], cwd=self.__path).decode('utf-8')
+        return [TreeEntry(l) for l in out.split('\n') if l]
 
 
 class Progress:
@@ -80,41 +79,33 @@ class Progress:
         print('... [{}/{}] ...'.format(self.__current, self.__total), end='\r')
 
 
-def find_tags(repository, repo_file, test_file):
+def find_tags(repository: Repository, test_file):
     found_tags = []
     all_tags = repository.get_all_tags()
     progress = Progress(len(all_tags))
 
     for tag in all_tags:
         progress.advance()
-        repository.checkout(tag)
-        if test_file.hash() == repo_file.hash():
-            log_info('Found! {}'.format(tag), indent=1)
-            found_tags.append(tag)
+        for entry in repository.get_tree_for_revision(tag):
+            if entry.hash == test_file.hash():
+                log_info('Found! {}'.format(tag), indent=1)
+                found_tags.append(Result(tag, entry.name))
     return found_tags
 
 
 if __name__ == '__main__':
     args = Args(sys.argv)
     test_file = File(args.file())
-    repo_file = File(args.repo() + '/' + args.repo_file())
     repository = Repository(args.repo())
 
     print('''
-          Repository:            {}
-          Path to file in repo:  {} ({})
-          File to test:          {} ({})
+          Repository:     {}
+          File to test:   {} (git hash: {})
+          '''.format(args.repo(), args.file(), test_file.hash()))
 
-          Please make sure that the repository is at the current revision!
-          '''.format(args.repo(), args.repo_file(), repo_file.hash(), args.file(), test_file.hash()))
+    log_info('Looking for all tags with a blob: {}'.format(test_file.hash()))
 
-    log_info('Looking for all tags with {} in specified version ({})'.format(
-        args.repo_file(), test_file.hash()))
-
-    found_tags = find_tags(repository, repo_file, test_file)
-
-    log_info('\nDone! found tags:')
-    for tag in found_tags:
-        print('  - {}'.format(tag))
-
-    repository.checkout_initial_revision()
+    found_tags = find_tags(repository, test_file)
+    log_info('Done! found tags:', before=2)
+    for result in found_tags:
+        print('  - {} ({})'.format(result.tag, result.filepath))

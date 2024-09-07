@@ -1,6 +1,6 @@
 # fingermonkey
 
-A tool to detect versions of open source apps based on world-readable assets such as unminified javascript, css, static html or images.
+A tool that detects versions of open source apps based on the world-readable assets such as images, js, css or static html.
 
 ## How does it work
 

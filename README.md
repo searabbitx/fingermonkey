@@ -6,7 +6,7 @@ I tested this tool against couple of popular webapps. To see how it performs in 
 
 ## How does it work
 
-To use the tool, you need to download some files from your target (preferably a lot of them :], `wget -r` is your friend) and the git repository of the app. When you pass those assets and the repository to fingermonkey it will:
+To use the tool, you need to download some files from your target (preferably a lot of them :], `wget -r` is your friend) and clone the git repository of the app. When you pass those assets and the repository to fingermonkey it will:
 
 1. Iterate through all the supplied files and calculate their git hashes:
 

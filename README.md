@@ -1,6 +1,25 @@
 # fingermonkey
 
-A tool to detect versions of open source apps based on the world-readable files such as unminified javascript, css or static html.
+A tool to detect versions of open source apps based on the world-readable files such as unminified javascript, css, static html or images.
+
+## How does it work
+
+1. First, fingermonkey iterates through all supplied files calculates their git hashes:
+
+```bash
+git hash-object <your-file>
+```
+
+2. Then it checks if those files exist in any revision of the supplied repository. The files that don't have corresponding `blob` objects in the repository are ignored.
+
+3. Then it iterates through all the tags in the repository and gathers those that have at least one of the blob objects from step 2. in their tree.
+
+```bash
+# for each tag:
+git ls-tree -r <tag>
+```
+
+4. Finally, fingermonkey will show top 10 tags with the highest number of matching blobs
 
 ## Usage
 
@@ -9,7 +28,29 @@ python fingermonkey.py REPOSITORY FILES/DIRECTORIES...
 ```
 If you use a directory then fingermonkey will find all of the files in this directory recursively.
 
-**NOTE**: The tool first checks if a file exists in any revision of the supplied
+**NOTE**: The tool first checks if a file exists in any revision of the supplied. Files that don't exist in any revision are ignored.
+
+### Example 1. Downloading as much stuff as possible :)
+
+#### Preparation
+
+Download all assets from couple of pages recursively:
+
+```bash
+wget -r -erobots=off https://superopensourceapp.example.com/some_page -P /tmp/some_page/
+wget -r -erobots=off https://superopensourceapp.example.com/other_page -P /tmp/other_page/
+# sometimes 404 pages are static, so try
+wget -r -erobots=off https://superopensourceapp.example.com/idontexist123123 -P /tmp/404_page/
+```
+
+#### Running
+
+Then run:
+```bash
+python fingermonkey.py ~/repos/SomeOpenSourceApp /tmp/some_page /tmp/other_page/ /tmp/404_page/
+```
+
+fingermonkey will pick up all files in specified directories recursively and ignore those, that don't exist in any revision of the repository.
 
 ### Example 1. Testing specific files
 
@@ -34,40 +75,4 @@ git clone https://imaginary.git.hosting.example.com/superopensourceapp ~/repos/S
 Finally, to find possible versions of `SomeOpenSourceApp` based on versions of gathered files, run:
 ```bash
 python fingermonkey.py ~/repos/SomeOpenSourceApp /tmp/app.js /tmp/main.css
-```
-
-### Example 2. Downloading as much stuff as possible :)
-
-### Preparation
-
-Download all assets from couple of pages recursively:
-
-```bash
-wget -r -erobots=off https://superopensourceapp.example.com/some_page -P /tmp/some_page/
-wget -r -erobots=off https://superopensourceapp.example.com/other_page -P /tmp/other_page/
-# sometimes 404 pages are static, so try
-wget -r -erobots=off https://superopensourceapp.example.com/idontexist123123 -P /tmp/404_page/
-```
-
-Then run:
-
-```bash
-python fingermonkey.py ~/repos/SomeOpenSourceApp /tmp/some_page /tmp/other_page/ /tmp/404_page/
-```
-
-fingermonkey will pick up all files in specified directories recursively and ignore those, that don't exist in any revision of the repository.
-
-## How does it work
-
-First, fingermonkey calculates a git hash of a file:
-
-```bash
-git hash-object <your-file>
-```
-
-Then it iterates through all the tags in the repository and outputs those that have a blob with the same hash in their tree, meaning that in this revision there is a file of identical content.
-
-```bash
-# for each tag:
-git ls-tree -r <tag>
 ```

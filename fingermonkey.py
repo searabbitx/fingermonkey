@@ -62,6 +62,7 @@ class Result:
     def __init__(self, tag, mappings):
         self.tag = tag
         self.mappings = mappings
+        self.matches = len(mappings)
 
 
 class Repository:
@@ -119,8 +120,7 @@ def find_tags(repository: Repository, files):
     for tag in all_tags:
         progress.advance()
         mappings = find_mappings(tag, files)
-        if len(files) == len(mappings):  # if all files are present in this tag
-            log_info('Found! {}'.format(tag))
+        if len(mappings) > 0:
             found_tags.append(Result(tag, mappings))
 
     progress.finish()
@@ -128,7 +128,7 @@ def find_tags(repository: Repository, files):
     return found_tags
 
 
-def print_banner(args: Args, files):
+def print_banner(args: Args, files, print_files=False):
     print('''
      ___ _                     
     |  _|_|___ ___ ___ ___     
@@ -141,21 +141,27 @@ def print_banner(args: Args, files):
                           |___|'''[1:])
     pad = 4 * ' '
     print(pad + 'Repository:     {}'.format(args.repo()))
-    print(pad + 'Files that exist in some revision:')
-    for file in files:
-        print(
-            pad + '  - {} (git hash: {})'.format(file.path.ljust(args.longest_filename()), file.hash()))
-
-
-def print_results(results, longest_filename):
-    log_section('Results')
-    log_info('Done! found {} tags:'.format(len(results)))
-
-    for result in results:
-        print('  - {}'.format(result.tag))
-        for mapping in result.mappings:
+    print(pad + 'Number of files that exist in some revision: {}'.format(len(files)))
+    if print_files:
+        print(pad + 'Files that exist in some revision:')
+        for file in files:
             print(
-                '    {} -> {}'.format(mapping.test_file.ljust(longest_filename + 1), mapping.repo_file))
+                pad + '  - {} (git hash: {})'.format(file.path.ljust(args.longest_filename()), file.hash()))
+
+
+def print_results(results, longest_filename, print_mappings=False):
+    log_section('Results')
+    log_info(
+        'Done! found {} tags with at least one matching file'.format(len(results)))
+
+    print('Top 10 tags:')
+    top_results = sorted(results, key=lambda x: x.matches, reverse=True)[:10]
+    for result in top_results:
+        print('  - {} ({} files matched)'.format(result.tag, result.matches))
+        if print_mappings:  # todo: print_mappings=True when -v
+            for mapping in result.mappings:
+                print(
+                    '    {} -> {}'.format(mapping.test_file.ljust(longest_filename + 1), mapping.repo_file))
 
 
 def find_files_recursively(paths):

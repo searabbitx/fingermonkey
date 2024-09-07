@@ -11,13 +11,13 @@ class Args:
         self.__argv = argv
 
     def repo(self):
-        return sys.argv[1]
+        return self.__argv[1]
 
     def repo_file(self):
-        return sys.argv[2]
+        return self.__argv[2]
 
     def file(self):
-        return sys.argv[3]
+        return self.__argv[3]
 
 
 class File:
@@ -106,7 +106,7 @@ if __name__ == '__main__':
 
     found_tags = find_tags(repository, repo_file, test_file)
 
-    log_info('Done! found tags:')
+    log_info('\nDone! found tags:')
     for tag in found_tags:
         print('  - {}'.format(tag))
 

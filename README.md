@@ -27,6 +27,8 @@ git ls-tree -r <tag>
 
 ## Usage
 
+The tool doesn't use any external packages. You only need `git` installed and in your `PATH`.
+
 ```
 usage: python fingermonkey.py [-h] [-v] REPOSITORY FILE [FILE ...]
 

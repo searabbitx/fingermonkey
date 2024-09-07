@@ -178,8 +178,9 @@ def print_results(results, longest_filename, print_mappings=False):
 
     print('Top 10 tags:')
     top_results = sorted(results, key=lambda x: x.matches, reverse=True)[:10]
+    longest_tag_name = max([len(r.tag) for r in top_results])
     for result in top_results:
-        print('  - {} ({} files matched)'.format(result.tag, result.matches))
+        print('  - {} ({} files matched)'.format(result.tag.ljust(longest_tag_name), result.matches))
         if print_mappings:  # todo: print_mappings=True when -v
             for mapping in result.mappings:
                 print(
